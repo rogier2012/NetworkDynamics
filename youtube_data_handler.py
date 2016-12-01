@@ -67,19 +67,18 @@ def difference_likes_dislikes():
 
 def plot_hotline_bling():
     likes_per_day = {}
-    # likes_per_day = get_likes_dislikes_hotline_bling()
+    likes_per_day = get_likes_dislikes_hotline_bling()
     data = dict()
     for k,v in likes_per_day.items():
-        total = v[0] + v[1]
-        diff = v[0] - v[1]
+        total = int(v[0]) + int(v[1])
+        diff = int(v[0]) - int(v[1])
         data[total] = diff
-    plt.scatter(data.keys(),data.values())
+    print(data)
+    plt.scatter(list(data.keys()),list(data.values()))
     plt.title("Hotline Bling")
     plt.show()
 
-# plt.plot(data[1].get("likes"))
-# plt.title(data[0])
-# plt.show()
+
 
 
 
@@ -95,4 +94,4 @@ def get_likes_dislikes_hotline_bling():
     return result
 
 
-print(len(get_likes_dislikes_hotline_bling()))
+plot_hotline_bling()
