@@ -31,9 +31,9 @@ def plot_hotline_bling():
     print(diff_data_with_date)
     # print(sorted_data)
     # print(diff_data)
-    # plt.plot(*zip(*diff_data))
-    # plt.title("Hotline Bling")
-    # plt.show()
+    plt.plot(*zip(*diff_data))
+    plt.title("Hotline Bling")
+    plt.show()
 
 
 def get_likes_dislikes(index):
@@ -45,6 +45,19 @@ def get_likes_dislikes(index):
             youtube = json.loads(json_data1)
             entry = youtube[index]
             # if entry['snippet']['title'] == "Drake - Hotline Bling":
+            if str(file) == "20160530_1800_data.json":
+                (key, likes,dislikes) = result[len(result)-1]
+                step = (int(entry['statistics']['likeCount']) - likes)//4
+                dislike_step = (int(entry['statistics']['dislikeCount']) - dislikes)//4
+                result.append(("20160527", likes+step, dislikes + dislike_step ))
+                result.append(("20160528", likes+2*step, dislikes+ 2*dislike_step ))
+                result.append(("20160529", likes+3*step, dislikes+ 3*dislike_step ))
+            elif str(file) == "20160808_1800_data.json":
+                (key, likes,dislikes) = result[len(result)-1]
+                step = (int(entry['statistics']['likeCount']) - likes)//3
+                dislike_step = (int(entry['statistics']['dislikeCount']) - dislikes)//3
+                result.append(("20160806", likes+step, dislikes + dislike_step ))
+                result.append(("20160807", likes+2*step, dislikes+ 2*dislike_step ))
             result.append((file.replace("_1800_data.json", ""),int(entry['statistics']['likeCount']), int(entry['statistics']['dislikeCount'])))
         counter += 1
 
