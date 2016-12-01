@@ -2,7 +2,7 @@ import json
 
 json_data1=open("data/spotify_top100/20151109_1800_data.json").read()
 spotify_data = json.loads(json_data1)
-json_data2=open("data/youtube_top100/20151110_1800_data.json").read()
+json_data2=open("data/youtube_top100/20161128_1800_data.json").read()
 youtube_data = json.loads(json_data2)
 print(len(youtube_data))
 # print(youtube_data[0].get("snippet",{}).get("title"),"")
