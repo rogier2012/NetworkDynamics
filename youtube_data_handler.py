@@ -91,7 +91,9 @@ def get_likes_dislikes_hotline_bling():
         youtube = json.loads(json_data1)
         entry = youtube[2]
         if entry['snippet']['title'] == "Drake - Hotline Bling":
-            result[(file.replace("_1800_data.json", ""))] = ((entry['statistics']['likeCount']), (entry['statistics']['dislikeCount']))
+            result[(file.replace("_1800_data.json", ""))] = (int(entry['statistics']['likeCount']), int(entry['statistics']['dislikeCount']))
+
+
     return result
 
 
