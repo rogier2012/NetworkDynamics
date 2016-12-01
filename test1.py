@@ -17,7 +17,7 @@ import os
 #
 #     print(track_name + " youtube: " + video_name + " index " + str(spotify_tracks.index(track)))
 counter = 0
-folder = "youtube_top100"
+folder = "radio3fm_megahit"
 
 
 for filename in os.listdir("data/"+folder):
