@@ -12,41 +12,70 @@ def difference_likes_dislikes():
     json_data1 = open("data/spotify_top100/20151109_1800_data.json").read()
     spotify_data = json.loads(json_data1)
     spotify_tracks = spotify_data.get("tracks").get("items", [])
+    del spotify_tracks[29]
+    del spotify_tracks[45]
+    json_data2 = open("data/youtube_top100/20151109_1800_data.json").read()
+    youtube_data_begin = json.loads(json_data2)
+    del youtube_data_begin[29]
+    del youtube_data_begin[45]
+    json_data2 = open("data/youtube_top100/20161126_1800_data.json").read()
+    youtube_data_end = json.loads(json_data2)
+
     for track in spotify_tracks:
         track_name = track.get("track", {}).get("name", "")
-        result[track_name] = {"index": spotify_tracks.index(track), "likes": []}
+        # if (spotify_tracks.index(track)< 98):
+        statistics = youtube_data_begin[spotify_tracks.index(track)].get("statistics", {})
+        blikes = int(statistics.get("likeCount"))
+        bdislikes = int(statistics.get("dislikeCount"))
+        d1 = blikes+bdislikes
+        statistics = youtube_data_end[spotify_tracks.index(track)].get("statistics", {})
+        elikes = int(statistics.get("likeCount",0))
+        edislikes = int(statistics.get("dislikeCount",0))
+        d2 = blikes+bdislikes
+            # print(spotify_tracks.index(track))
+            # print(youtube_data_begin[spotify_tracks.index(track)].get("snippet").get("title"))
+            # print(youtube_data_end[spotify_tracks.index(track)].get("snippet").get("title"))
 
+        result[track_name] = {"index": spotify_tracks.index(track),
+                              "likes": [],
+                              "d1"   : d1 ,
+                              "d2"   : d2
+                            }
+
+
+    counter = 0
     for filename in os.listdir("data/youtube_top100"):
-        if (filename.endswith(".json")):
-            year = int(filename[:4])
-            month = int(filename[4:6])
-            day = int(filename[6:8])
-            date = datetime.date(year,month,day)
-            datenum = matplotlib.dates.date2num(date)
+        if (filename.endswith(".json") and counter > 60):
+
             json_data = open("data/youtube_top100/" + filename).read()
             youtube_data = json.loads(json_data)
             for video in youtube_data:
 
                 statistics = video.get("statistics", {})
-                likes = statistics.get("likeCount")
-                dislikes = statistics.get("dislikeCount")
+                likes = int(statistics.get("likeCount"))
+                dislikes = int(statistics.get("dislikeCount"))
                 for k,v in result.items():
                     if v.get("index",-1) == youtube_data.index(video):
-                        v.get("likes").append((int(likes)-int(dislikes)))
+                        v.get("likes").append(likes-dislikes)
+        counter += 1
+
 
     return result
 
 
 
-# print(difference_likes_dislikes())
-data = difference_likes_dislikes().popitem()
-# print(data[1].get("likes").keys())
-begin = datetime.date(2015,11,9)
-end = datetime.date(2016,11,28)
-delta = datetime.timedelta(days=1)
-dates = drange(begin,end,delta)
 
-
+def plot_hotline_bling():
+    likes_per_day = {}
+    # likes_per_day = get_likes_dislikes_hotline_bling()
+    data = dict()
+    for k,v in likes_per_day.items():
+        total = v[0] + v[1]
+        diff = v[0] - v[1]
+        data[total] = diff
+    plt.scatter(data.keys(),data.values())
+    plt.title("Hotline Bling")
+    plt.show()
 
 # plt.plot(data[1].get("likes"))
 # plt.title(data[0])
