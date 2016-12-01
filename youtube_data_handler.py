@@ -29,9 +29,7 @@ def plot_hotline_bling():
         diff_data_with_date.append((data_with_date[k],v-previous))
         previous = v
     del diff_data[0]
-    print(diff_data_with_date)
-    # print(sorted_data)
-    # print(diff_data)
+    print(*diff_data)
     plt.plot(*zip(*diff_data))
     x, y = (zip(*diff_data))
     x = np.array(x)
@@ -46,9 +44,9 @@ def plot_hotline_bling():
 def get_likes_dislikes(index):
     result = []
     counter =0
-    for file in os.listdir("data/radio538_alarmschijf/"):
+    for file in os.listdir("data/youtube_top100/"):
         if (counter < 300):
-            json_data1 = open("data/radio538_alarmschijf/" + file).read()
+            json_data1 = open("data/youtube_top100/" + file).read()
             youtube = json.loads(json_data1)
             entry = youtube[index]
             # if entry['snippet']['title'] == "Drake - Hotline Bling":
