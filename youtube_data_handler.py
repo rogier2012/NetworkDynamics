@@ -5,13 +5,14 @@ from pprint import pprint
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange
 import operator
 
 def plot_hotline_bling():
     likes_per_day = {}
     # for i in range(50):
-    likes_per_day = get_likes_dislikes(2)
+    likes_per_day = get_likes_dislikes(0)
     data = []
     data_with_date = {}
     for k,v1,v2 in likes_per_day:
@@ -32,6 +33,12 @@ def plot_hotline_bling():
     # print(sorted_data)
     # print(diff_data)
     plt.plot(*zip(*diff_data))
+    x, y = (zip(*diff_data))
+    x = np.array(x)
+    y = np.array(y)
+    m, b = np.polyfit(x, y, 1)
+    # plt.plot(x, y, '.')
+    plt.plot(x, m * x + b, '-')
     plt.title("Hotline Bling")
     plt.show()
 
@@ -39,9 +46,9 @@ def plot_hotline_bling():
 def get_likes_dislikes(index):
     result = []
     counter =0
-    for file in os.listdir("data/youtube_top100/"):
+    for file in os.listdir("data/radio538_alarmschijf/"):
         if (counter < 300):
-            json_data1 = open("data/youtube_top100/" + file).read()
+            json_data1 = open("data/radio538_alarmschijf/" + file).read()
             youtube = json.loads(json_data1)
             entry = youtube[index]
             # if entry['snippet']['title'] == "Drake - Hotline Bling":
