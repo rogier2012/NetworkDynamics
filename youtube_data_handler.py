@@ -1,6 +1,8 @@
 import os
 import json
 import datetime
+from pprint import pprint
+
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange
@@ -34,6 +36,8 @@ def difference_likes_dislikes():
 
     return result
 
+
+
 # print(difference_likes_dislikes())
 data = difference_likes_dislikes().popitem()
 # print(data[1].get("likes").keys())
@@ -44,6 +48,22 @@ dates = drange(begin,end,delta)
 
 
 
-plt.plot(data[1].get("likes"))
-plt.title(data[0])
-plt.show()
+# plt.plot(data[1].get("likes"))
+# plt.title(data[0])
+# plt.show()
+
+
+
+
+def get_likes_dislikes_hotline_bling():
+    result = dict()
+    for file in os.listdir("data/youtube_top100/"):
+        json_data1 = open("data/youtube_top100/" + file).read()
+        youtube = json.loads(json_data1)
+        entry = youtube[2]
+        if entry['snippet']['title'] == "Drake - Hotline Bling":
+            result[(file.replace("_1800_data.json", ""))] = ((entry['statistics']['likeCount']), (entry['statistics']['dislikeCount']))
+    return result
+
+
+print(len(get_likes_dislikes_hotline_bling()))
