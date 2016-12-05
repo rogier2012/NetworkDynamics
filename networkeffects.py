@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from datetime import datetime
 from collections import defaultdict
 from pprint import pprint
 
@@ -59,6 +60,21 @@ def store_time_views():
         json.dump(data, outfile, indent=4)
 
 # store_time_views()
+def plot_all_songs():
+    json_data1 = open("data/intermediate_data/views_over_time.json").read()
+    songs = json.loads(json_data1)
+    json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
+    youtube = json.loads(json_data2)
+    for song in songs:
+        data = dict_to_tuplelist(song,True)
+
+        plt.plot(*zip(*data))
+        song_name=youtube[songs.index(song)].get("snippet", {}).get("title", "")
+        plt.title(song_name)
+        plt.savefig("figures/networkeffects/1.png")
+        plt.close()
+        break
+
 
 def dsum(*dicts):
     ret = defaultdict(int)
@@ -90,3 +106,23 @@ def get_all_data_derivative():
 
 
 get_all_data_derivative()
+
+def str_to_date(strs):
+    result=[]
+    for item in strs:
+        result.append(datetime.strptime(item,"%Y-%m-%d"))
+    return result
+
+def dict_to_tuplelist(input,date_conversion_needed=False):
+    result = []
+    for k,v in input.items():
+        if (date_conversion_needed):
+            d = datetime.strptime(k,"%Y-%m-%d")
+            result.append((d,v))
+        else:
+            result.append((k,v))
+
+    return sorted(result)
+
+
+plot_all_songs()
