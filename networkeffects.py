@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+from collections import defaultdict
 from pprint import pprint
 
 import matplotlib
@@ -57,4 +58,35 @@ def store_time_views():
     with open('data/intermediate_data/views_over_time.json', 'w') as outfile:
         json.dump(data, outfile, indent=4)
 
-store_time_views()
+# store_time_views()
+
+def dsum(*dicts):
+    ret = defaultdict(int)
+    for d in dicts:
+        for k, v in d.items():
+            ret[k] += v
+    return dict(ret)
+
+def get_all_data_derivative():
+    with open('data/intermediate_data/'+'views_over_time'+'.json') as data_file:
+        print('lol')
+        result = {}
+        data = json.load(data_file)
+        first_entry = data.pop(0)
+        for key, value in first_entry.items():
+            result[key] = value
+
+        for entry in data:
+            result = dsum(result,entry )
+        result2 = {}
+        for key, value in result.items():
+            result2[datetime.datetime.strptime(key, '%Y-%m-%d').date()] = value
+
+
+
+        # plt.plot(result2.keys(), result2.values())
+        plt.title('total')
+        plt.show()
+
+
+get_all_data_derivative()
