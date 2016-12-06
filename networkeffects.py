@@ -62,7 +62,7 @@ def store_time_views():
     with open('data/intermediate_data/views_over_time.json', 'w') as outfile:
         json.dump(data, outfile, indent=4)
 
-def plot_all_songs():
+def plot_all_songs(derivative=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
     json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
@@ -70,12 +70,26 @@ def plot_all_songs():
 
     for song in songs:
         data = dict_to_tuplelist(song,songs.index(song) == 73,date_conversion_needed=True)
-        plt.plot(*zip(*data))
+        if (derivative):
+            diff_data = derivative_data(data)
+            plt.plot(*zip(*diff_data))
+        else:
+            plt.plot(*zip(*data))
         song_name=youtube[songs.index(song)].get("snippet", {}).get("title", "")
         plt.title(song_name)
         plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0]  + ".png")
         plt.close()
 
+def derivative_data(input):
+    result = []
+    previous = 0
+    for k,v in input:
+        result.append((k,v-previous))
+        previous = v
+
+    del result[0]
+
+    return result
 
 
 def dict_to_tuplelist(input,drake,date_conversion_needed=False):
@@ -91,4 +105,4 @@ def dict_to_tuplelist(input,drake,date_conversion_needed=False):
     return sorted(result)
 
 # store_time_views()
-plot_all_songs()
+plot_all_songs(derivative=True)
