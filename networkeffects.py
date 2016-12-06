@@ -75,6 +75,17 @@ def plot_all_songs():
         plt.close()
         break
 
+def dict_to_tuplelist(input,date_conversion_needed=False):
+    result = []
+    for k,v in input.items():
+        if (date_conversion_needed):
+            d = datetime.strptime(k,"%Y-%m-%d")
+            result.append((d,v))
+        else:
+            result.append((k,v))
+
+    return sorted(result)
+
 
 def dsum(*dicts):
     ret = defaultdict(int)
@@ -86,22 +97,37 @@ def dsum(*dicts):
 def get_all_data_derivative():
     with open('data/intermediate_data/'+'views_over_time'+'.json') as data_file:
         print('lol')
-        result = {}
+        average_views = {}
         data = json.load(data_file)
         first_entry = data.pop(0)
         for key, value in first_entry.items():
-            result[key] = value
-
+            average_views[key] = value
         for entry in data:
-            result = dsum(result,entry )
-        result2 = {}
-        for key, value in result.items():
-            result2[datetime.datetime.strptime(key, '%Y-%m-%d').date()] = value
-
-
-
-        # plt.plot(result2.keys(), result2.values())
+            average_views = dsum(average_views,entry )
+        for key, value in average_views.items():
+            average_views[key] = value//98
+        average_views_tuple = dict_to_tuplelist(average_views, True)
+        diff_data = []
+        index_diff_data = []
+        counter = 1
+        previous = 0
+        for k, v in average_views_tuple:
+            diff_data.append((k, v - previous))
+            index_diff_data.append((counter, v - previous))
+            previous = v
+            counter = counter+1
+        del diff_data[0]
+        del index_diff_data[0]
+        x, y = (zip(*index_diff_data))
+        x = np.array(x)
+        y = np.array(y)
+        m, b = np.polyfit(x, y, 1)
+        # plt.plot(x, m * x + b, '-')
         plt.title('total')
+        # plt.plot(*zip(*index_diff_data))
+        plt.plot(*zip(*average_views_tuple))
+        print(diff_data)
+        print(index_diff_data)
         plt.show()
 
 
@@ -113,16 +139,6 @@ def str_to_date(strs):
         result.append(datetime.strptime(item,"%Y-%m-%d"))
     return result
 
-def dict_to_tuplelist(input,date_conversion_needed=False):
-    result = []
-    for k,v in input.items():
-        if (date_conversion_needed):
-            d = datetime.strptime(k,"%Y-%m-%d")
-            result.append((d,v))
-        else:
-            result.append((k,v))
-
-    return sorted(result)
 
 
 plot_all_songs()
