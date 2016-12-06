@@ -64,7 +64,6 @@ def store_time_views():
         json.dump(data, outfile, indent=4)
 
 def plot_all_songs(derivative=False):
-# store_time_views()
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
     json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
@@ -74,6 +73,13 @@ def plot_all_songs(derivative=False):
         if (derivative):
             diff_data = derivative_data(data)
             plt.plot(*zip(*diff_data))
+            x, y = (zip(*diff_data))
+            x1 = np.array(range(len(x)))
+            y1 = np.array(y)
+
+            m, b = np.polyfit(x1, y1, 1)
+            plt.plot(x, m * x1 + b, '-')
+
         else:
             plt.plot(*zip(*data))
         song_name=youtube[songs.index(song)].get("snippet", {}).get("title", "")
@@ -105,8 +111,6 @@ def dict_to_tuplelist(input,drake,date_conversion_needed=False):
 
     return sorted(result)
 
-# store_time_views()
-plot_all_songs(derivative=True)
 
 def dsum(*dicts):
     ret = defaultdict(int)
@@ -152,7 +156,7 @@ def get_all_data_derivative():
         plt.show()
 
 
-get_all_data_derivative()
+# get_all_data_derivative()
 
 def str_to_date(strs):
     result=[]
@@ -162,4 +166,4 @@ def str_to_date(strs):
 
 
 
-plot_all_songs()
+plot_all_songs(derivative=True)
