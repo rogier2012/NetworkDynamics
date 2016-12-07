@@ -17,17 +17,18 @@ import os
 #
 #     print(track_name + " youtube: " + video_name + " index " + str(spotify_tracks.index(track)))
 counter = 0
-folder = "radio538_alarmschijf"
+folder = "youtube_top100"
 
 
-# for filename in os.listdir("data/"+folder):
-#     counter += 1
-#     json_data2 = open("data/"+folder+"/"+str(filename)).read()
-#     youtube_data = json.loads(json_data2)
-#     print(str(counter) + ". " + filename)
-#     for video in youtube_data:
-#         print(str(youtube_data.index(video)) + " "+  video.get("snippet").get("title"))
+for filename in os.listdir("data/"+folder):
+    counter += 1
+    json_data2 = open("data/"+folder+"/"+str(filename)).read()
+    youtube_data = json.loads(json_data2)
+    print(str(counter) + ". " + filename)
+    for video in youtube_data:
+        if youtube_data.index(video) == 73 or youtube_data.index(video) == 22 or youtube_data.index(video) == 67:
+            print(str(youtube_data.index(video)) + " "+  video.get("snippet").get("title"))
+    break
 
-
-for filename in os.listdir("figures/cascades"):
-    print("\\includegraphics[width=0.5\\textwidth]{figures/cascades/" + filename + "}")
+# for filename in os.listdir("figures/cascades"):
+#     print("\\includegraphics[width=0.5\\textwidth]{figures/cascades/" + filename + "}")

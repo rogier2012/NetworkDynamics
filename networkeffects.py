@@ -2,14 +2,10 @@ import os
 import json
 import datetime as dt
 from datetime import datetime
-from collections import defaultdict
-from pprint import pprint
 
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-
-
+import random
 
 
 def store_time_views():
@@ -21,15 +17,16 @@ def store_time_views():
         for file in os.listdir("data/youtube_top100" + "/"):
             json_data1 = open("data/youtube_top100" + "/" + file).read()
             youtube = json.loads(json_data1)
-            if (i < len(youtube)):
+            if i < len(youtube):
                 entry = youtube[i]
             else:
                 entry = {}
             year = int(file[:4])
             month = int(file[4:6])
             day = int(file[6:8])
-            if (len(entry) > 0 and youtube.index(entry) != 73 and youtube.index(entry) != 22 and youtube.index(entry) != 67):
-                if song_name == "": song_name = entry.get("snippet", {}).get("title", "")
+            if len(entry) > 0 :
+                if song_name == "":
+                    song_name = entry.get("snippet", {}).get("title", "")
                 if str(file) == "20160530_1800_data.json":
                     (key, viewCount) = int_result[len(int_result) - 1]
                     step = (int(entry['statistics']['viewCount']) - viewCount) // 4
@@ -55,13 +52,13 @@ def store_time_views():
 
                 int_result.append((dt.date(year, month, day), int(entry['statistics']['viewCount'])))
                 result[str(dt.date(year, month, day))] = int(entry['statistics']['viewCount'])
-                if (youtube.index(entry) == 73): print(entry)
 
-        # for k,v in int_result:
-        #     result[str(k)] = v
-        if len(result) > 0: data.append(result)
+
+        if len(result) > 0:
+            data.append(result)
     with open('data/intermediate_data/views_over_time.json', 'w') as outfile:
         json.dump(data, outfile, indent=4)
+
 
 def plot_all_songs(derivative=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
@@ -69,8 +66,8 @@ def plot_all_songs(derivative=False):
     json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
     youtube = json.loads(json_data2)
     for song in songs:
-        data = dict_to_tuplelist(song,songs.index(song) == 73,date_conversion_needed=True)
-        if (derivative):
+        data = dict_to_tuple_list(song, date_conversion_needed=True)
+        if derivative:
             diff_data = derivative_data(data)
             plt.plot(*zip(*diff_data))
             x, y = (zip(*diff_data))
@@ -80,24 +77,22 @@ def plot_all_songs(derivative=False):
             m, b = np.polyfit(x1, y1, 1)
             plt.plot(x, m * x1 + b, '-')
 
-
-
         else:
             plt.plot(*zip(*data))
-        song_name=youtube[songs.index(song)].get("snippet", {}).get("title", "")
+        song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
         plt.title(song_name)
-        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0]  + ".png")
+        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
         plt.close()
 
 
-def plot_network_effects_songs():
+def plot_network_effects_songs(index=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
     json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
     youtube = json.loads(json_data2)
-    result = {'Yes':[], 'No':[]}
+    result = {True: [], False: []}
     for song in songs:
-        data = dict_to_tuplelist(song, songs.index(song) == 73, date_conversion_needed=True)
+        data = dict_to_tuple_list(song, date_conversion_needed=True)
         diff_data = derivative_data(data)
         x, y = (zip(*diff_data))
         x1 = np.array(range(len(x)))
@@ -105,25 +100,27 @@ def plot_network_effects_songs():
 
         m, b = np.polyfit(x1, y1, 1)
 
-        plt.plot(x, m * x1 + b, '-')
-        plt.plot(*zip(*diff_data))
+        # plt.plot(x, m * x1 + b, '-')
+        # plt.plot(*zip(*diff_data))
 
         song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
-        plt.title(song_name)
-        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
-        plt.close()
-        if m < 0:
-            result['Yes'].append(song_name)
+        # plt.title(song_name)
+        # plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
+        # plt.close()
+        if index:
+
+            result[(m < 0)].append(songs.index(song))
         else:
-            result['No'].append(song_name)
+
+            result[(m < 0)].append(song_name)
     return result
 
 
-def derivative_data(input):
+def derivative_data(input_dict):
     result = []
     previous = 0
-    for k,v in input:
-        result.append((k,v-previous))
+    for k, v in input_dict:
+        result.append((k, v - previous))
         previous = v
 
     del result[0]
@@ -131,73 +128,46 @@ def derivative_data(input):
     return result
 
 
-def dict_to_tuplelist(input,drake,date_conversion_needed=False):
+def dict_to_tuple_list(input_dict, date_conversion_needed=False):
     result = []
-    if drake: print(input)
-    for k,v in input.items():
-        if (date_conversion_needed):
-            d = datetime.strptime(k,"%Y-%m-%d")
-            result.append((d,v))
+    for k, v in input_dict.items():
+        if date_conversion_needed:
+            d = datetime.strptime(k, "%Y-%m-%d")
+            result.append((d, v))
         else:
-            result.append((k,v))
+            result.append((k, v))
 
     return sorted(result)
-
-
-def dsum(*dicts):
-    ret = defaultdict(int)
-    for d in dicts:
-        for k, v in d.items():
-            ret[k] += v
-    return dict(ret)
-
-def get_all_data_derivative():
-    with open('data/intermediate_data/'+'views_over_time'+'.json') as data_file:
-        print('lol')
-        average_views = {}
-        data = json.load(data_file)
-        first_entry = data.pop(0)
-        for key, value in first_entry.items():
-            average_views[key] = value
-        for entry in data:
-            average_views = dsum(average_views,entry )
-        for key, value in average_views.items():
-            average_views[key] = value//98
-        average_views_tuple = dict_to_tuplelist(average_views, True)
-        diff_data = []
-        index_diff_data = []
-        counter = 1
-        previous = 0
-        for k, v in average_views_tuple:
-            diff_data.append((k, v - previous))
-            index_diff_data.append((counter, v - previous))
-            previous = v
-            counter = counter+1
-        del diff_data[0]
-        del index_diff_data[0]
-        x, y = (zip(*index_diff_data))
-        x = np.array(x)
-        y = np.array(y)
-        m, b = np.polyfit(x, y, 1)
-        # plt.plot(x, m * x + b, '-')
-        plt.title('total')
-        # plt.plot(*zip(*index_diff_data))
-        plt.plot(*zip(*average_views_tuple))
-        print(diff_data)
-        print(index_diff_data)
-        plt.show()
 
 
 # get_all_data_derivative()
 
 def str_to_date(strs):
-    result=[]
+    result = []
     for item in strs:
-        result.append(datetime.strptime(item,"%Y-%m-%d"))
+        result.append(datetime.strptime(item, "%Y-%m-%d"))
     return result
 
 
+def five_random_songs():
+    data = plot_network_effects_songs(index=True)
+    plots = {True: [], False: []}
+    for k in data:
+        for i in range(5):
+            r = random.choice(data[k])
+            while r in plots[k]:
+                r = random.choice(data[k])
+            plots[k].append(r)
 
-# plot_all_songs(derivative=True)
-print(plot_network_effects_songs())
+    for k in plots:
+        print(plots[k])
 
+
+# five_random_songs()
+def size_network_effect_sets():
+    data1 = plot_network_effects_songs()
+    for bool1 in data1:
+        print(str(bool1) + ": " + str(len(data1[bool1])))
+
+# size_network_effect_sets()
+plot_all_songs(derivative=True)
