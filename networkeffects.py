@@ -80,12 +80,44 @@ def plot_all_songs(derivative=False):
             m, b = np.polyfit(x1, y1, 1)
             plt.plot(x, m * x1 + b, '-')
 
+
+
         else:
             plt.plot(*zip(*data))
         song_name=youtube[songs.index(song)].get("snippet", {}).get("title", "")
         plt.title(song_name)
         plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0]  + ".png")
         plt.close()
+
+
+def plot_network_effects_songs():
+    json_data1 = open("data/intermediate_data/views_over_time.json").read()
+    songs = json.loads(json_data1)
+    json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
+    youtube = json.loads(json_data2)
+    result = {'Yes':[], 'No':[]}
+    for song in songs:
+        data = dict_to_tuplelist(song, songs.index(song) == 73, date_conversion_needed=True)
+        diff_data = derivative_data(data)
+        x, y = (zip(*diff_data))
+        x1 = np.array(range(len(x)))
+        y1 = np.array(y)
+
+        m, b = np.polyfit(x1, y1, 1)
+
+        plt.plot(x, m * x1 + b, '-')
+        plt.plot(*zip(*diff_data))
+
+        song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
+        plt.title(song_name)
+        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
+        plt.close()
+        if m < 0:
+            result['Yes'].append(song_name)
+        else:
+            result['No'].append(song_name)
+    return result
+
 
 def derivative_data(input):
     result = []
@@ -166,4 +198,6 @@ def str_to_date(strs):
 
 
 
-plot_all_songs(derivative=True)
+# plot_all_songs(derivative=True)
+print(plot_network_effects_songs())
+
