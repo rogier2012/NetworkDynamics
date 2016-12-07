@@ -14,8 +14,8 @@ def store_time_views():
         int_result = []
         result = {}
         song_name = ""
-        for file in os.listdir("data/youtube_top100" + "/"):
-            json_data1 = open("data/youtube_top100" + "/" + file).read()
+        for file in os.listdir("data/youtube_top95" + "/"):
+            json_data1 = open("data/youtube_top95" + "/" + file).read()
             youtube = json.loads(json_data1)
             if i < len(youtube):
                 entry = youtube[i]
@@ -63,10 +63,11 @@ def store_time_views():
 def plot_all_songs(derivative=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
-    json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
+    json_data2 = open("data/youtube_top95/20160325_1800_data.json").read()
     youtube = json.loads(json_data2)
     for song in songs:
         data = dict_to_tuple_list(song, date_conversion_needed=True)
+        suffix = ""
         if derivative:
             diff_data = derivative_data(data)
             plt.plot(*zip(*diff_data))
@@ -76,19 +77,19 @@ def plot_all_songs(derivative=False):
 
             m, b = np.polyfit(x1, y1, 1)
             plt.plot(x, m * x1 + b, '-')
-
+            suffix = "_diff"
         else:
             plt.plot(*zip(*data))
         song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
         plt.title(song_name)
-        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
+        plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + suffix + ".png")
         plt.close()
 
 
 def plot_network_effects_songs(index=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
-    json_data2 = open("data/youtube_top100/20160325_1800_data.json").read()
+    json_data2 = open("data/youtube_top95/20160325_1800_data.json").read()
     youtube = json.loads(json_data2)
     result = {True: [], False: []}
     for song in songs:
@@ -104,12 +105,13 @@ def plot_network_effects_songs(index=False):
         # plt.plot(*zip(*diff_data))
 
         song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
+        filename = str(songs.index(song)) + song_name.split()[0] + "_diff"
         # plt.title(song_name)
-        # plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + ".png")
+        # plt.savefig("figures/networkeffects/" + filename + ".png")
         # plt.close()
         if index:
 
-            result[(m < 0)].append(songs.index(song))
+            result[(m < 0)].append(filename + ".png")
         else:
 
             result[(m < 0)].append(song_name)
@@ -160,14 +162,18 @@ def five_random_songs():
             plots[k].append(r)
 
     for k in plots:
-        print(plots[k])
+        print("\\begin{figure}")
+        for c in plots[k]:
+            print("\\includegraphics[width=0.33\\textwidth]{figures/networkeffects/" + c + "}")
+        print("\\end{end}")
 
 
-# five_random_songs()
+five_random_songs()
 def size_network_effect_sets():
     data1 = plot_network_effects_songs()
     for bool1 in data1:
         print(str(bool1) + ": " + str(len(data1[bool1])))
 
 # size_network_effect_sets()
-plot_all_songs(derivative=True)
+# plot_all_songs(derivative=True)
+# store_time_views()

@@ -25,9 +25,8 @@ for filename in os.listdir("data/"+folder):
     json_data2 = open("data/"+folder+"/"+str(filename)).read()
     youtube_data = json.loads(json_data2)
     print(str(counter) + ". " + filename)
-    for video in youtube_data:
-        if youtube_data.index(video) == 73 or youtube_data.index(video) == 22 or youtube_data.index(video) == 67:
-            print(str(youtube_data.index(video)) + " "+  video.get("snippet").get("title"))
+    print(len(youtube_data))
+
     break
 
 # for filename in os.listdir("figures/cascades"):

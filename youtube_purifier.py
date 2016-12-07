@@ -1,12 +1,13 @@
 import os
 import json
 
-folder = "youtube_top100"
+folder = "youtube_top95"
 
 
 for filename in os.listdir("data/"+folder):
     json_data2 = open("data/" + folder + "/" + str(filename)).read()
     youtube_data = json.loads(json_data2)
+    old = len(youtube_data)
     indices = []
     for video in youtube_data:
         if "Jumpman" in video.get("snippet", {}).get("title", ""):
@@ -18,6 +19,9 @@ for filename in os.listdir("data/"+folder):
 
     for i in indices:
         del youtube_data[i]
-
-    with open("data/" + folder + "/" + str(filename), 'w') as outfile:
-        json.dump(youtube_data, outfile)
+    new = len(youtube_data)
+    if (old == 98 and new == 95):
+        with open("data/" + folder + "/" + str(filename), 'w') as outfile:
+            json.dump(youtube_data, outfile)
+    else:
+        print(filename)
