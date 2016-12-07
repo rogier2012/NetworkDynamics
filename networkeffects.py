@@ -168,12 +168,12 @@ def five_random_songs():
         print("\\end{end}")
 
 
-five_random_songs()
+# five_random_songs()
 def size_network_effect_sets():
     data1 = plot_network_effects_songs()
     for bool1 in data1:
         print(str(bool1) + ": " + str(len(data1[bool1])))
 
 # size_network_effect_sets()
-# plot_all_songs(derivative=True)
+plot_all_songs()
 # store_time_views()
