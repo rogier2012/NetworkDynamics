@@ -4,7 +4,6 @@ import datetime as dt
 from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
-import powerlaw
 
 
 def derivative_data(input_dict):
@@ -40,7 +39,7 @@ def power_law_youtube():
         result.append(dict_to_tuple_list(song, True)[0][1])
         if songs.index(song) == 0:
             day = dict_to_tuple_list(song, True)[0][0]
-
+    print(result)
     new_result = []
     for item in result:
         x = item
@@ -101,6 +100,7 @@ def rank_over_time(song_name, index):
     # plt.legend()
     # plt.title(song_name)
 
+power_law_youtube()
 
 # power_law_youtube()
 rank_over_time("Hello", 0)

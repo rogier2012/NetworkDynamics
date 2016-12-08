@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import json
 from pprint import pprint
-
+import matplotlib.pyplot as plt
+import numpy as np
 from config import *
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -57,7 +58,7 @@ def get_related_video(video_id, listOfIds):
 
                 return result
     return None
-def get_video_list(song_name, listOfIds):
+def get_video_list(song_name, listOfIds, limit = 100):
     result_list = []
     youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
                     developerKey=DEVELOPER_KEY)
@@ -76,7 +77,7 @@ def get_video_list(song_name, listOfIds):
     result['statistics'] = get_statistics(result['id'])
     result_list.append(result)
     prev = result['id']
-    for i in range(1,100):
+    for i in range(1,limit):
         listOfIds.append(prev)
         result = get_related_video(prev, listOfIds)
 
@@ -89,6 +90,30 @@ def get_video_list(song_name, listOfIds):
 
 
 
+def power_law_youtube():
+    json_data1 = open("data/own_data.json").read()
+    songs = json.loads(json_data1)['data']
+    day = None
+    result = []
+    for song in songs:
+        result.append(int(song['statistics']['viewCount']))
+
+    new_result = []
+    for item in result:
+        x = item
+        y = 0
+        for i in result:
+            if i >= x:
+                y += 1
+        new_result.append((np.log(x), np.log(y)))
+    plt.scatter(*zip(*new_result))
+    plt.title('HAHA HITLER')
+    plt.ylabel("log(number of songs)")
+    plt.xlabel("log(views)")
+    plt.show()
+
+
+
 if __name__ == "__main__":
   # argparser.add_argument("--q", help="Search term", default="")
   # argparser.add_argument("--max-results", help="Max results", default=5)
@@ -96,8 +121,8 @@ if __name__ == "__main__":
   # print(args)
   try:
       # print(is_music_video('X5Cfi7U4eL4'))
-      get_video_list("last christmas", [])
-
+    get_video_list("deetox alone", [])
+    power_law_youtube()
     # is_music_video('OQcne0OxUnA')
   except HttpError as e:
     print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
