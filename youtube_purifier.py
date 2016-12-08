@@ -1,7 +1,7 @@
 import os
 import json
 
-folder = "youtube_top95"
+folder = "youtube_top100_small"
 
 
 for filename in os.listdir("data/"+folder):
@@ -20,7 +20,7 @@ for filename in os.listdir("data/"+folder):
     for i in indices:
         del youtube_data[i]
     new = len(youtube_data)
-    if (old == 98 and new == 95):
+    if (old == 100 and new == 97):
         with open("data/" + folder + "/" + str(filename), 'w') as outfile:
             json.dump(youtube_data, outfile)
     else:
