@@ -95,3 +95,4 @@ ENV/
 config.py
 /.idea/misc.xml
 /.idea/NetworkDynamics.iml
+.idea/
