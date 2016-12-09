@@ -27,6 +27,21 @@ def store_time_views():
             if len(entry) > 0 :
                 if song_name == "":
                     song_name = entry.get("snippet", {}).get("title", "")
+                if str(file) == "20151209_1800_data.json":
+                    (key, viewCount) = int_result[len(int_result) - 1]
+                    step = (int(entry['statistics']['viewCount']) - viewCount) // 5
+                    d15 = dt.date(2015, 12, 5)
+                    d16 = dt.date(2015, 12, 6)
+                    d17 = dt.date(2015, 12, 7)
+                    d18 = dt.date(2015, 12, 8)
+                    int_result.append((d15, viewCount + step))
+                    int_result.append((d16, viewCount + 2 * step))
+                    int_result.append((d17, viewCount + 3 * step))
+                    int_result.append((d18, viewCount + 4 * step))
+                    result[str(d15)] = viewCount + step
+                    result[str(d16)] = viewCount + 2 * step
+                    result[str(d17)] = viewCount + 3 * step
+                    result[str(d18)] = viewCount + 4 * step
                 if str(file) == "20160530_1800_data.json":
                     (key, viewCount) = int_result[len(int_result) - 1]
                     step = (int(entry['statistics']['viewCount']) - viewCount) // 4
@@ -56,14 +71,14 @@ def store_time_views():
 
         if len(result) > 0:
             data.append(result)
-    with open('data/intermediate_data/views_over_time.json', 'w') as outfile:
+    with open('data/intermediate_data/views_over_time_small.json', 'w') as outfile:
         json.dump(data, outfile, indent=4)
 
 
 def plot_all_songs(derivative=False):
     json_data1 = open("data/intermediate_data/views_over_time.json").read()
     songs = json.loads(json_data1)
-    json_data2 = open("data/youtube_top95/20160325_1800_data.json").read()
+    json_data2 = open("data/youtube_top100_small/20160325_1800_data.json").read()
     youtube = json.loads(json_data2)
     for song in songs:
         data = dict_to_tuple_list(song, date_conversion_needed=True)
@@ -74,16 +89,16 @@ def plot_all_songs(derivative=False):
             x, y = (zip(*diff_data))
             x1 = np.array(range(len(x)))
             y1 = np.array(y)
-
             m, b = np.polyfit(x1, y1, 1)
             plt.plot(x, m * x1 + b, '-')
-            suffix = "_diff"
+            suffix = "_diff_1"
         else:
             plt.plot(*zip(*data))
         song_name = youtube[songs.index(song)].get("snippet", {}).get("title", "")
         plt.title(song_name)
         plt.savefig("figures/networkeffects/" + str(songs.index(song)) + song_name.split()[0] + suffix + ".png")
         plt.close()
+
 
 
 def plot_network_effects_songs(index=False):
@@ -175,5 +190,5 @@ def size_network_effect_sets():
         print(str(bool1) + ": " + str(len(data1[bool1])))
 
 # size_network_effect_sets()
-plot_all_songs()
+plot_all_songs(True)
 # store_time_views()
