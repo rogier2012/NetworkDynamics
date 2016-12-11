@@ -94,7 +94,7 @@ def get_video_list(song_name, listOfIds, limit = 100):
 
 
 def power_law_youtube(song_name, log_log=False):
-    json_data1 = open("data/own_data.json").read()
+    json_data1 = open("data/own_data_rood_100.json").read()
     songs = json.loads(json_data1)['data']
     result = []
     print(len(songs))
@@ -109,7 +109,7 @@ def power_law_youtube(song_name, log_log=False):
             if i >= x:
                 y += 1
         if(log_log):
-            new_result.append((np.log(y), np.log(x)))
+            new_result.append((np.log10(y), np.log10(x)))
 
         else:
             new_result.append((y, x))
@@ -121,9 +121,13 @@ def power_law_youtube(song_name, log_log=False):
         plt.xlabel("ranking of songs")
         plt.ylabel("views")
     plt.scatter(*zip(*new_result))
-    plt.title('Result for query: '+ song_name + " N = 1000")
+    plt.title('Result for query: '+ song_name + " N = " + str(len(songs)))
     # plt.show()
-    plt.savefig("figures/own_data/" + "own_data"+ str(".png"))
+    if(log_log):
+        plt.savefig("figures/own_data_2/" + "own_data_"+song_name+"_loglog_"+str(len(songs)) +str(".png"))
+    else:
+        plt.savefig("figures/own_data_2/" + "own_data_"+song_name +"_"+str(len(songs))+ str(".png"))
+
     plt.close()
 
 
@@ -154,10 +158,10 @@ def calculate_shapiro_wilk():
     print('Dataset normally distributed? ' + str(p>.05))
 
 try:
-    query = "acdc thunderstruck"
+    query = "marco borsato rood"
     # get_video_list(query, [], 1000)
     # if data already available, run this function:
-    # power_law_youtube(query)
+    power_law_youtube(query)
     power_law_youtube(query, log_log=True)
     # print(calculate_percentual_difference('hotline_100', 'rood_100'))
     # calculate_shapiro_wilk()
